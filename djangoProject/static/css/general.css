@@ -1,0 +1,102 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background: #151718;
+    width: 100%;
+    height: 8vh;
+    margin-top: 0;
+}
+
+menu {
+    margin: 0;
+    /*margin-top: 0.8em;*/
+    margin-left: 10%;
+    padding: 0;
+    width: 60%;
+    list-style: none;
+    color: white;
+    display: inline-block;
+}
+
+menu li.active {
+    background: #44a7fd;
+}
+
+menu li {
+    display: inline-flex;
+    align-items: center;
+    width: 12vw;
+    height: 8vh;
+    justify-content: space-around;
+}
+
+.logo {
+    display: flex;
+    float: left;
+    width: 10%;
+    margin-left: 5%;
+    color: white;
+    font-size: 2em;
+}
+
+menu li {
+    margin-left: 5%;
+    color: #fafafa;
+}
+
+.main {
+    width: 100%;
+}
+
+.switcher {
+    width: 30vw;
+    display: flex;
+    clear: both;
+    align-content: flex-start;
+    align-items: center;
+    flex-direction: row;
+    justify-content: center;
+    background: white;
+    border-radius: 2px;
+}
+
+.switcher .item {
+    width: 15vw;
+    justify-content: center;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    align-content: space-around;
+    flex-direction: row;
+    height: 5vh;
+}
+
+.switcher .item:first-child {
+    /*border-bottom: 2px solid white;*/
+    background: #44a7fd;
+    color: white;
+}
+
+.switcher .item:nth-child(2) {
+    /*border-left: 1px solid black;*/
+}
+
+#result{
+    /*display: none;*/
+    height: 70vh;
+    border: 10px solid white;
+    border-radius: 2px;
+}
+
+.loading{
+    color: #151718;
+    font-size: 2em;
+}
+
+menu li a{
+    text-decoration: none;
+    color: #fafafa;
+}

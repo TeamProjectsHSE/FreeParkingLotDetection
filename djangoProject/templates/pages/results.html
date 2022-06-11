@@ -1,0 +1,12 @@
+{% extends 'index.html' %}
+{% load static %}
+{% load general %}
+
+{% block header %}
+    <script src="{% static 'js/script.js' %}"></script>
+    <link rel="stylesheet" href="{% static "css/style.css" %}">
+{% endblock %}
+
+{% block content %}
+    <img id="result" src="{{ img_path }}">
+{% endblock %}

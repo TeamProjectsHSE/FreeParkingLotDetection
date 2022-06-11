@@ -1,0 +1,29 @@
+{% extends 'index.html' %}
+{% load static %}
+{% load general %}
+
+{% block header %}
+    <script src="{% static 'js/script.js' %}"></script>
+    <link rel="stylesheet" href="{% static "css/style.css" %}">
+{% endblock %}
+
+{% block content %}
+    <div class="loading" style="display: none">
+        Loading...
+    </div>
+    <div class="container">
+        <div class="switcher">
+            <div class="item active">Model 1</div>
+            <div class="item">Model 2</div>
+        </div>
+        <form id="upload-container" method="post" enctype='multipart/form-data' action="{% url 'load_img' %}">
+            {% csrf_token %}
+            <img id="upload-image" src="{% static 'img/upload.svg' %}">
+            <div>
+                <input id="file-input" type="file" name="file" multiple>
+                <label for="file-input">Выберите файл</label>
+                <span>или перетащите его сюда</span>
+            </div>
+        </form>
+    </div>
+{% endblock %}

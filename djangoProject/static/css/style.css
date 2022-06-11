@@ -1,0 +1,62 @@
+.main {
+	padding: 0;
+	margin: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 89vh;
+}
+
+#upload-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	width: 80vw;
+	height: 50vh;
+	outline: 2px dashed #fff;
+	outline-offset: -12px;
+	background-color: #44a7fd;
+	font-family: 'Segoe UI';
+	color: #fafafa;
+	/*padding: 2% 2%;*/
+}
+
+#upload-container img {
+	width: 15%;
+	margin-bottom: 20px;
+	user-select: none;
+	filter: contrast(50);
+}
+
+#upload-container label {
+	font-weight: bold;
+}
+
+#upload-container label:hover {
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+#upload-container div {
+	position: relative;
+	z-index: 10;
+}
+
+#upload-container input[type=file] {
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	position: absolute;
+	z-index: -10;
+}
+
+#upload-container label.focus {
+	outline: 1px solid #0078d7;
+	outline: -webkit-focus-ring-color auto 5px;
+}
+
+#upload-container.dragover, .switcher .item.active.dragover {
+	background-color: #9a9a9a;
+	outline-offset: -17px;
+}
