@@ -1,5 +1,5 @@
 import torch
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -12,72 +12,58 @@ class Detector:
 
     def __init__(self, path_to_weights):
         self.model = torch.hub.load('ultralytics/yolov5', 'custom', path=path_to_weights, force_reload=True)
-        self.model.conf = 0.5  # confidence threshold (0-1)
-        # self.model.iou = 0.491  # NMS IoU threshold (0-1)
+        self.model.conf = 0.566  # confidence threshold (0-1)
+        #self.model.iou = 0.491  # NMS IoU threshold (0-1)
         self.image_size = 512
-        self.results = {0: [], 1: []}
-        self.squares = {0: 0, 1: 0}
-        self.squares_conf = {0: [], 1: []}
         self.detects = None
+        self.labels = {0: 'free', 1: 'occupied'}
+        self.colors = {0: (51, 255, 51), 1: (230, 44, 44)}
+        self.out = None
 
+        
     def show(self):
         return Image.fromarray(self.detects.render()[0])
 
     def save(self, filename):
-        return Image.fromarray(self.detects.render()[0]).save(filename)
-
-    @staticmethod
-    def _check_inclusion(y, x, label):
-        xmin = label[0]
-        ymin = label[1]
-        xmax = label[2]
-        ymax = label[3]
-        if (x < xmax) and (x > xmin) and (y < ymax) and (y > ymin):
-            return True
-        return False
+        return self.out.save(filename)
 
     @staticmethod
     def _is_pil_image(img):
         return isinstance(img, Image.Image)
 
-    def detect(self, image):
+    def plot_one_box_PIL(self, boxes, im, line_thickness=3):
+        draw = ImageDraw.Draw(im)
+        for box, label in boxes:
+            color = self.colors[label]
+            lbl =  self.labels[label]
+            draw.rectangle(box, width=line_thickness, outline=color)  # plot
+            if lbl:
+                font = ImageFont.load_default()
+                txt_width, txt_height = font.getsize(lbl)
+                draw.rectangle([box[0], box[1] - txt_height + 4, box[0] + txt_width, box[1]], fill=color)
+                draw.text((box[0], box[1] - txt_height + 1), lbl, fill=(255, 255, 255))
+        return im
+  
+    def detect(self, image, binary_mask):
         if not self._is_pil_image(image):
             image = Image.fromarray(image)
-        self.results = {0: [], 1: []}
-        self.squares = {0: 0, 1: 0}
-        self.squares_conf = {0: [], 1: []}
         self.detects = self.model(image, size=self.image_size)
-        detection_info = self.detects.xyxy[0].tolist()
-        for label in detection_info:  # label: xmin ymin xmax ymax  confidence classname
-            self.results[int(label[5])].append(label)
+        detection_info = self.detects.xywh[0].tolist()
+        detection_info_plt = self.detects.xyxy[0].tolist()
+        boxes = []
+        for label in detection_info: #label: xmin ymin xmax ymax  confidence classname #class x_center y_center width height
+            if binary_mask[int(label[1])][int(label[0])] != 1:
+                xyxy = detection_info_plt[detection_info.index(label)][0:4]
+                c = int(label[5])
+                boxes.append((xyxy, c))
+        self.out = self.plot_one_box_PIL(boxes, image)
 
-        arr = np.array(image)
-        for i in range(arr.shape[0]):
-            for j in range(arr.shape[1]):
-                for classname, labels in self.results.items():
-                    for label in labels:
-                        if self._check_inclusion(i, j, label):
-                            self.squares[classname] += 1
-                            break
-
-        for classname, labels in self.results.items():
-            confs = [label[4] for label in labels]
-            if confs:
-                min_conf = min(confs)
-                max_conf = max(confs)
-            else:
-                max_conf = min_conf = None
-            self.squares_conf[classname] = [self.squares[classname], min_conf, max_conf]
-
-        return self.squares_conf
-
-
-detector = Detector(path_to_weights)
+detector = Detector(path_to_weights)    
 
 
 def detect_on_img(path_to_img, binary_mask):
     image = Image.open(path_to_img)
-    detector.detect(image)
+    detector.detect(image, binary_mask)
     detector.save(path_to_img)  # save image in same place, similar for video
 
 
