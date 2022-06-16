@@ -46,16 +46,20 @@ class Detector:
   
     def detect(self, image, binary_mask):
         if not self._is_pil_image(image):
-            image = Image.fromarray(image)
-        self.detects = self.model(image, size=self.image_size)
-        detection_info = self.detects.xywh[0].tolist()
+            image = Image.fromarray(image).convert('BR')
+        cv_image = np.array(image) 
+        cv_image = cv_image[:, :, ::-1].copy()
+        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+        res = Image.fromarray(cv2.bitwise_and(cv_image,cv_image, mask = binary_mask))
+        self.detects = self.model(res, size=self.image_size)
+
+       #detection_info = self.detects.xywh[0].tolist()
         detection_info_plt = self.detects.xyxy[0].tolist()
         boxes = []
-        for label in detection_info: #label: xmin ymin xmax ymax  confidence classname #class x_center y_center width height
-            if binary_mask[int(label[1])][int(label[0])] != 1:
-                xyxy = detection_info_plt[detection_info.index(label)][0:4]
-                c = int(label[5])
-                boxes.append((xyxy, c))
+        for label in detection_info_plt: #label: xmin ymin xmax ymax  confidence classname #class x_center y_center width height
+            xyxy = label[0:4]
+            c = int(label[5])
+            boxes.append((xyxy, c))
         self.out = self.plot_one_box_PIL(boxes, image)
 
 detector = Detector(path_to_weights)    
